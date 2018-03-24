@@ -132,7 +132,7 @@ namespace TicTacToe
         private static void DrawInstructions()
         {
             Console.WriteLine("");
-            Console.WriteLine("Please Enter your move in the form 'row column' (zero indexed):");
+            Console.WriteLine("Please Enter your move in the form 'row column':");
         }
 
         private static bool TryParseInput(string input, out Tuple<int, int> move)
@@ -152,13 +152,15 @@ namespace TicTacToe
                 return false;
             }
 
-            if (row < 0 || 2 < row
-                || column < 0 || 2 < column)
+            // we check that the user has entered a one-indexed row and column.
+            if (row < 1 || 3 < row
+                || column < 1 || 3 < column)
             {
                 move = null;
                 return false;
             }
-            move = new Tuple<int, int>(row, column);
+            // we convert the user's input to zero indexed.
+            move = new Tuple<int, int>(row - 1, column - 1);
             return true;
         }
     }
