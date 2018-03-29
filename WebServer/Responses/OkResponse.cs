@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
@@ -6,34 +7,30 @@ namespace WebServer.Responses
 {
     internal class OkResponse : Response
     {
+        private static readonly Dictionary<string, string> FileExtensionToContentTypeMap = new Dictionary<string, string>
+        {
+            { ".html", "text/html" },
+            { ".jpg", "image/jpeg" },
+            { ".js", "text/javascript" }
+        };
+
         private readonly byte[] _responseBytes;
 
         public OkResponse(string responseBody) : this(Encoding.UTF8.GetBytes(responseBody))
         {
-            // TODO we will probably use this for API responses, we should set the contenttype.
+            Headers["Content-Type"] = "application/json";
         }
 
         public OkResponse(FileInfo fileInfo) : this(File.ReadAllBytes(fileInfo.FullName))
         {
-            // we need to work out what content type we are dealing with.
-            string contentType;
-            switch (fileInfo.Extension)
-            {
-                case ".html":
-                    contentType = "text/html";
-                    break;
-                case ".jpg":
-                    contentType = "image/jpeg";
-                    break;
-                default:
-                    throw new NotSupportedException($"Unknown file type: {fileInfo.Extension}");
-            }
-            Headers["Content-Type"] = contentType;
+            Headers["Content-Type"] = FileExtensionToContentTypeMap[fileInfo.Extension];
         }
 
         public OkResponse(byte[] responseBytes)
         {
             _responseBytes = responseBytes;
+            Headers["Content-Length"] = _responseBytes.Length.ToString();
+            Headers["Cache-Control"] = "no-cache";
         }
 
         public override HttpResponseCode ResponseCode => HttpResponseCode.Ok;

@@ -1,14 +1,13 @@
-﻿using System;
-using System.Text;
+﻿using System.Text;
 using System.Text.RegularExpressions;
 
-namespace WebServer
+namespace WebServer.Requests
 {
     public class Request
     {
         private const string RequestRegexPattern = @"GET (\S*) .*";
 
-        public Request(string requestedResource)
+        private Request(string requestedResource)
         {
             Resource = requestedResource;
         }
