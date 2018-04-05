@@ -32,8 +32,11 @@ namespace WebServer.Servers
                     using (var handler = socket.Accept())
                     {
                         var data = ReceiveData(handler);
-                        var response = GenerateResponse(data);
-                        SendResponse(handler, response);
+                        if (data.Length > 0)
+                        {
+                            var response = GenerateResponse(data);
+                            SendResponse(handler, response);
+                        }
                     }
                 }
             }

@@ -45,6 +45,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ComputerAI.cs" />
     <Compile Include="Requests\ApiRequest.cs" />
     <Compile Include="GameAction.cs" />
     <Compile Include="GameManager.cs" />

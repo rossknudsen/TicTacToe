@@ -40,28 +40,7 @@ namespace TicTacToe.GameEngine
             return Squares.Count(s => s.Token == player.PlayerToken);
         }
 
-        public GameResult GetGameResult()
-        {
-            // check all the possible winning scenarios.
-            var winningDirection = GetAllDirections()
-                .Select(d => d.ToList())
-                .ToList()
-                .FirstOrDefault(IsDirectionWinner);
-
-            if (winningDirection != null)
-            {
-                var winningToken = winningDirection.First().Token;
-                return new GameResult(GameState.Won, winningToken, winningDirection);
-            }
-
-            if (Squares.Any(s => s.Token == PlayerToken.Empty))
-            {
-                return new GameResult(GameState.Playing);
-            }
-            return new GameResult(GameState.Draw);
-        }
-
-        private bool IsDirectionWinner(IEnumerable<Square> direction)
+        internal bool IsDirectionWinner(IEnumerable<Square> direction)
         {
             var squares = direction.ToList();
             if (squares.Count(s => s.Token == PlayerToken.Circle) == 3)
@@ -75,7 +54,7 @@ namespace TicTacToe.GameEngine
             return false;
         }
 
-        private IEnumerable<IEnumerable<Square>> GetAllDirections()
+        internal IEnumerable<IEnumerable<Square>> GetAllDirections()
         {
             yield return GetRow(0);
             yield return GetRow(1);

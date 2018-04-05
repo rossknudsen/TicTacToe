@@ -1,25 +1,53 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using TicTacToe.GameEngine;
 
 namespace WebServer
 {
     internal class GameManager
     {
-        private readonly Game _game;
+        private readonly Dictionary<int, Game> _games;
 
         public GameManager()
         {
-            _game = Game.CreateGame();
+            _games = new Dictionary<int, Game>();
         }
 
         internal Game ExecuteGameAction(int gameId, GameAction action)
         {
-            // TODO lookup the game based on id.
+            if (action == null)
+            {
+                throw new ArgumentNullException(nameof(action));
+            }
 
-            _game.PlaceToken(_game.HumanPlayer, action.Row, action.Column);
+            var game = _games[gameId];
+            if (game == null)
+            {
+                throw new ArgumentException(nameof(gameId));
+            }
 
-            // TODO make computer player move.
+            // player move
+            game.PlaceToken(game.HumanPlayer, action.Row, action.Column);
 
-            return _game;
+            // computer move if game not finished.
+            if (game.GameResult.GameState == GameState.Playing)
+            {
+                game.PlaceToken(game.ComputerPlayer, ComputerAi.DetermineMove(game));
+            }
+
+            return game;
+        }
+
+        internal int CreateGame()
+        {
+            var newKey = 1;
+            if (_games.Keys.Count > 0)
+            {
+                newKey = _games.Keys.Max() + 1;
+            }
+            _games[newKey] = Game.CreateGame();
+            return newKey;
         }
     }
 }

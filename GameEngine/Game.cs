@@ -10,6 +10,7 @@ namespace TicTacToe.GameEngine
             Board = board;
             HumanPlayer = humanPlayer;
             ComputerPlayer = computerPlayer;
+            GameResult = GetGameResult();
         }
 
         public Board Board { get; }
@@ -17,6 +18,8 @@ namespace TicTacToe.GameEngine
         public Player HumanPlayer { get; }
 
         public Player ComputerPlayer { get; }
+
+        public GameResult GameResult { get; private set; }
 
         public static Game CreateGame()
         {
@@ -52,7 +55,7 @@ namespace TicTacToe.GameEngine
                 throw new GameException("Its not your turn.");
             }
 
-            var gameOver = Board.GetGameResult().GameState != GameState.Playing;
+            var gameOver = GameResult.GameState != GameState.Playing;
             if (gameOver)
             {
                 throw new GameException("Game is over");
@@ -65,6 +68,28 @@ namespace TicTacToe.GameEngine
             }
             
             selectedSquare.Token = player.PlayerToken;
+            GameResult = GetGameResult();
+        }
+
+        private GameResult GetGameResult()
+        {
+            // check all the possible winning scenarios.
+            var winningDirection = Board.GetAllDirections()
+                .Select(d => d.ToList())
+                .ToList()
+                .FirstOrDefault(Board.IsDirectionWinner);
+
+            if (winningDirection != null)
+            {
+                var winningToken = winningDirection.First().Token;
+                return new GameResult(GameState.Won, winningToken, winningDirection);
+            }
+
+            if (Board.Squares.Any(s => s.Token == PlayerToken.Empty))
+            {
+                return new GameResult(GameState.Playing);
+            }
+            return new GameResult(GameState.Draw);
         }
     }
 }
