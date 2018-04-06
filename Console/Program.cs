@@ -16,7 +16,7 @@ namespace TicTacToe
 
                 DrawInstructions();
                 
-                if (game.Board.GetGameResult().GameState == GameState.Playing)
+                if (game.GameResult.GameState == GameState.Playing)
                 {
                     if (!HumanPlayerTurn(game))
                     {
@@ -28,7 +28,7 @@ namespace TicTacToe
                     break;
                 }
                 
-                if (game.Board.GetGameResult().GameState == GameState.Playing)
+                if (game.GameResult.GameState == GameState.Playing)
                 {
                     ComputerPlayerTurn(game);
                 }
@@ -44,7 +44,7 @@ namespace TicTacToe
 
         private static void PrintGameResult(Game game)
         {
-            var result = game.Board.GetGameResult();
+            var result = game.GameResult;
             switch (result.GameState)
             {
                 case GameState.Draw:

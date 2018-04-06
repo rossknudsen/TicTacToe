@@ -9,7 +9,14 @@ namespace WebServer.Servers
 {
     public class WebServer : SocketServerBase
     {
-        public WebServer(string host, int port) : base(host, port) { }
+        private readonly string _gameServerHost;
+        private readonly int _gameServerPort;
+
+        public WebServer(string host, int port, string gameServerHost, int gameServerPort) : base(host, port)
+        {
+            _gameServerHost = gameServerHost;
+            _gameServerPort = gameServerPort;
+        }
 
         protected override Response GenerateResponse(byte[] data)
         {
