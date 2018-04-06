@@ -11,7 +11,8 @@ namespace WebServer.Responses
         {
             { ".html", "text/html" },
             { ".jpg", "image/jpeg" },
-            { ".js", "text/javascript" }
+            { ".js", "text/javascript" },
+            { ".css", "text/css" }
         };
 
         private readonly byte[] _responseBytes;

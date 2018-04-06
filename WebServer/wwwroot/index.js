@@ -1,13 +1,12 @@
 ﻿"use strict";
 
-let gameId;
 let game;
 
 function getGame() {
     // TODO make API call to get the initial game.
-    game = $.get("http://localhost:8080/api/game/new", function(data, status) {
+    $.get("http://localhost:8080/api/game/new", function(data, status) {
         if (status === "success") {
-            gameId = JSON.parse(data).gameId;
+            game = data;
         } else {
             // TODO handle errors...
         }
@@ -52,11 +51,11 @@ function handleSquareClick(rowIndex, colIndex) {
     $.ajax
     ({
         type: "POST",
-        url: "http://localhost:8080/api/game/" + gameId + "/actions",
+        url: "http://localhost:8080/api/game/" + game.GameId + "/actions",
         data: actionString,
         contentType: "application/json",
         success: function(data, status) {
-            game = JSON.parse(data);
+            game = data;
         }
     })
 }

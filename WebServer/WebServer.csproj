@@ -46,9 +46,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ComputerAI.cs" />
-    <Compile Include="Requests\ApiRequest.cs" />
+    <Compile Include="Requests\Request.cs" />
     <Compile Include="GameAction.cs" />
     <Compile Include="GameManager.cs" />
+    <Compile Include="Responses\ConstructedResponse.cs" />
     <Compile Include="Servers\GameServer.cs" />
     <Compile Include="HttpMethod.cs" />
     <Compile Include="Responses\BadRequestResponse.cs" />
@@ -58,9 +59,9 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Responses\RedirectResponse.cs" />
-    <Compile Include="Requests\Request.cs" />
     <Compile Include="Responses\Response.cs" />
     <Compile Include="Responses\ServerErrorResponse.cs" />
+    <Compile Include="Servers\GameState.cs" />
     <Compile Include="Servers\SocketServerBase.cs" />
     <Compile Include="Servers\WebServer.cs" />
   </ItemGroup>

@@ -18,7 +18,7 @@ namespace WebServer.Servers
 
         protected override Response GenerateResponse(byte[] data)
         {
-            if (!ApiRequest.TryParseRequest(data, out var request))
+            if (!Request.TryParseRequest(data, out var request))
             {
                 return new BadRequestResponse();
             }
@@ -50,21 +50,26 @@ namespace WebServer.Servers
             return false;
         }
 
-        private Response HandleNewGameRequest(ApiRequest request)
+        private Response HandleNewGameRequest(Request request)
         {
-            var gameId = _gm.CreateGame();
-            return new OkResponse(JsonConvert.SerializeObject(new { gameId = gameId })); 
+            var gameState = _gm.CreateGame();
+            return new OkResponse(JsonConvert.SerializeObject(gameState)); 
         }
 
-        private Response HandleGameActionRequest(ApiRequest request, int gameId)
+        private Response HandleGameActionRequest(Request request, int gameId)
         {
             try
             {
                 var action = JsonConvert.DeserializeObject<GameAction>(request.Body);
+                if (action == null)
+                {
+                    Console.WriteLine($"Could not deserialize body into Game Action\n{request.Body}");
+                    return new BadRequestResponse();
+                }
+
                 var resultingGame = _gm.ExecuteGameAction(gameId, action);
 
                 var json = JsonConvert.SerializeObject(resultingGame);
-
                 return new OkResponse(json);
             }
             catch (JsonException e)

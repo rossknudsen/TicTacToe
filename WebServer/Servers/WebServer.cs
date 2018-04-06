@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
+using System.Net.Sockets;
 using System.Text;
+using System.Threading;
 using WebServer.Requests;
 using WebServer.Responses;
 
@@ -23,7 +25,7 @@ namespace WebServer.Servers
             Response response;
             if (Request.TryParseRequest(data, out var request))
             {
-                response = ProcessRequest(request);
+                response = ProcessRequest(request, data);
             }
             else
             {
@@ -33,7 +35,7 @@ namespace WebServer.Servers
             return response;
         }
 
-        private static Response ProcessRequest(Request request)
+        private Response ProcessRequest(Request request, byte[] requestData)
         {
             // TODO we should implement a router to choose the handler for the request.
             if (request.Resource == ""
@@ -43,7 +45,7 @@ namespace WebServer.Servers
             }
             else if (request.Resource.StartsWith("/api"))
             {
-                return ProcessApiRequest(request);
+                return ProcessApiRequest(requestData);
             }
             else
             {
@@ -81,11 +83,35 @@ namespace WebServer.Servers
             }
         }
 
-        private static Response ProcessApiRequest(Request request)
+        private Response ProcessApiRequest(byte[] requestData)
         {
-            // TODO implement handling of API requests.
             // we should make a call to the game server to access the API.
-            throw new NotImplementedException();
+
+            using (var socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp))
+            {
+                socket.Connect(_gameServerHost, _gameServerPort);
+
+                if (!socket.Connected)
+                {
+                    // TODO do something here if we cannot connect.
+                }
+
+                socket.Send(requestData); // TODO we could try receiving a request object
+                // as a method parameter and then call a ToBytes() method on it to
+                // reconstruct the data stream.
+
+                var responseData = new byte[0];
+                while (responseData.Length == 0)
+                {
+                    responseData = ReceiveData(socket);
+                }
+
+                if (Response.TryParseResponse(responseData, out var response))
+                {
+                    return response;
+                }
+                return new ServerErrorResponse();
+            }
         }
     }
 }

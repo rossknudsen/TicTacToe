@@ -1,6 +1,8 @@
 ﻿using System;
+using System.IO;
 using System.Net;
 using System.Net.Sockets;
+using System.Threading;
 using System.Threading.Tasks;
 using WebServer.Responses;
 
@@ -42,13 +44,19 @@ namespace WebServer.Servers
             }
         }
 
-        private byte[] ReceiveData(Socket handler)
+        protected static byte[] ReceiveData(Socket handler)
         {
-            // TODO handle requests that are longer than 1024 bytes long.
-            var bytes = new byte[1024];
-            var bytesCount = handler.Receive(bytes);
-            var result = new byte[bytesCount];
-            Array.Copy(bytes, result, bytesCount);
+            const int bufferSize = 1024;
+            var bytes = new byte[bufferSize];
+
+            var totalBytesReceived = 0;
+            //while (true)
+            //{
+                totalBytesReceived += handler.Receive(bytes, totalBytesReceived, bufferSize - totalBytesReceived, SocketFlags.None);
+            //}
+
+            var result = new byte[totalBytesReceived];
+            Array.Copy(bytes, result, totalBytesReceived);
             return result;
         }
 
