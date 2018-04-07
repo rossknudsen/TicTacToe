@@ -1,3 +1,11 @@
+body {
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+.container {
+    margin: auto;
+}
+
 table {
     border-collapse: collapse;
 }
@@ -9,4 +17,7 @@ table, th, td {
 td {
     height: 100px;
     width: 100px;
+    font-size: 30px;
+    text-align: center;
+    font-weight: bold;
 }

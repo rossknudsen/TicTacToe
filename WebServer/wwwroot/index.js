@@ -7,6 +7,7 @@ function getGame() {
     $.get("http://localhost:8080/api/game/new", function(data, status) {
         if (status === "success") {
             game = data;
+            renderBoard();
         } else {
             // TODO handle errors...
         }
@@ -15,10 +16,23 @@ function getGame() {
 
 function renderBoard() {
     if (game === undefined) {
+        console.log("The game variable is not available");
         return;
     }
-    
+    for (let index = 0; index < 9; index++) {
+        let square = game.Game.Board.Squares[index];
+        if (square.Token === 1) {
+            setToken(index, "X");
+        } else if (square.Token === 2) {
+            setToken(index, "O");
+        } else {
+            setToken(index, "");
+        }
+    }
+}
 
+function setToken(squareNumber, token) {
+    $("td")[squareNumber].innerText = token;
 }
 
 function addClickHandlers() {
@@ -43,10 +57,24 @@ function addClickHandlers() {
 }
 
 function handleSquareClick(rowIndex, colIndex) {
+    // check if the game is not over.
+    if (game.Game.GameResult.GameState !== 0) {
+        alert("The game is over now.  Press 'Start New Game'");
+        return;
+    }
+
     let action = {
         "row": rowIndex,
         "column": colIndex
     };
+
+    // check if the square is already occupied.
+    var squareNumber = rowIndex * 3 + colIndex;
+    if (game.Game.Board.Squares[squareNumber].Token !== 0) {
+        alert("That square is already occupied.  Choose another.");
+        return;
+    }
+
     let actionString = JSON.stringify(action);
     $.ajax
     ({
@@ -56,13 +84,13 @@ function handleSquareClick(rowIndex, colIndex) {
         contentType: "application/json",
         success: function(data, status) {
             game = data;
+            renderBoard();
         }
     })
 }
 
 function init() {
     getGame();
-    renderBoard();
     addClickHandlers();
 }
 
