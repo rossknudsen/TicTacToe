@@ -81,7 +81,7 @@ namespace WebServer.Responses
 
         private static void ReadFirstLine(string line, out HttpResponseCode code, out string responseText)
         {
-            var split = line.Split(' ');
+            var split = line.Split(new [] {' '}, 3);
             responseText = split[2];
             if (!HttpResponseCode.TryParse(split[1], out code))
             {

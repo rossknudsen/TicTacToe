@@ -54,7 +54,7 @@ namespace TicTacToe.GameEngine
             return false;
         }
 
-        internal IEnumerable<IEnumerable<Square>> GetAllDirections()
+        public IEnumerable<IEnumerable<Square>> GetAllDirections()
         {
             yield return GetRow(0);
             yield return GetRow(1);
