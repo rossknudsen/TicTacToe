@@ -29,6 +29,46 @@ function renderBoard() {
             setToken(index, "");
         }
     }
+
+    hideAllOutcomes();
+    var gameState = game.Game.GameResult.GameState;
+    if (gameState == 0) {
+        // playing
+        hideAllOutcomes();
+    } else if (gameState == 1) {
+        // draw
+        showDraw();
+    } else if (gameState == 2) {
+        // a player won.
+        if (game.Game.GameResult.WinningToken == game.Game.HumanPlayer.PlayerToken) {
+            showPlayerWon();            
+        } else {
+            showComputerWon();
+        }
+        highlightWinningDirection();
+    }
+}
+
+function hideAllOutcomes() {
+    $("#playerWon").hide();
+    $("#playerLost").hide();
+    $("#draw").hide();
+}
+
+function showDraw() {
+    $("#draw").show();
+}
+
+function showPlayerWon() {
+    $("#playerWon").show();
+}
+
+function showComputerWon() {
+    $("#playerLost").show();
+}
+
+function highlightWinningDirection() {
+    // TODO currently I am not sending enough information to easily to this.
 }
 
 function setToken(squareNumber, token) {

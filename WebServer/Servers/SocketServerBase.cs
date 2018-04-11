@@ -37,8 +37,12 @@ namespace WebServer.Servers
                         if (data.Length > 0)
                         {
                             var response = GenerateResponse(data);
-                            SendResponse(handler, response);
+                            handler.Send(response.ToBytes());
                         }
+
+                        handler.Shutdown(SocketShutdown.Both);
+                        handler.Close();
+                        handler.Dispose();
                     }
                 }
             }
@@ -61,12 +65,5 @@ namespace WebServer.Servers
         }
 
         protected abstract Response GenerateResponse(byte[] data);
-
-        private void SendResponse(Socket handler, Response response)
-        {
-            handler.Send(response.ToBytes());
-            handler.Shutdown(SocketShutdown.Both);
-            handler.Close();
-        }
     }
 }
