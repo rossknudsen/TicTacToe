@@ -1,11 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
-namespace WebServer.Responses
+namespace TicTacToe.Responses
 {
-    internal class OkResponse : Response
+    public class OkResponse : Response
     {
         private static readonly Dictionary<string, string> FileExtensionToContentTypeMap = new Dictionary<string, string>
         {
@@ -14,8 +13,6 @@ namespace WebServer.Responses
             { ".js", "text/javascript" },
             { ".css", "text/css" }
         };
-
-        private readonly byte[] _responseBytes;
 
         public OkResponse(string responseBody) : this(Encoding.UTF8.GetBytes(responseBody))
         {
@@ -28,16 +25,10 @@ namespace WebServer.Responses
         }
 
         public OkResponse(byte[] responseBytes)
+            : base(HttpResponseCode.Ok, "Ok", new Dictionary<string, string>(), responseBytes)
         {
-            _responseBytes = responseBytes;
-            Headers["Content-Length"] = _responseBytes.Length.ToString();
+            Headers["Content-Length"] = responseBytes.Length.ToString();
             Headers["Cache-Control"] = "no-cache";
         }
-
-        public override HttpResponseCode ResponseCode => HttpResponseCode.Ok;
-
-        public override string ResponseText => "Ok";
-
-        protected override byte[] CreateResponseBody() => _responseBytes;
     }
 }

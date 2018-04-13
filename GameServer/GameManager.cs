@@ -3,18 +3,18 @@ using System.Collections.Generic;
 using System.Linq;
 using TicTacToe.GameEngine;
 
-namespace WebServer
+namespace TicTacToe
 {
     internal class GameManager
     {
-        private readonly Dictionary<int, Servers.GameState> _games;
+        private readonly Dictionary<int, GameState> _games;
 
         public GameManager()
         {
-            _games = new Dictionary<int, Servers.GameState>();
+            _games = new Dictionary<int, GameState>();
         }
 
-        internal Servers.GameState ExecuteGameAction(int gameId, GameAction action)
+        internal GameState ExecuteGameAction(int gameId, GameAction action)
         {
             if (action == null)
             {
@@ -32,7 +32,7 @@ namespace WebServer
             game.PlaceToken(game.HumanPlayer, action.Row, action.Column);
 
             // computer move if game not finished.
-            if (game.GameResult.GameState == GameState.Playing)
+            if (game.GameResult.GameState == TicTacToe.GameEngine.GameState.Playing)
             {
                 game.PlaceToken(game.ComputerPlayer, ComputerAi.DetermineMove(game));
             }
@@ -40,14 +40,14 @@ namespace WebServer
             return state;
         }
 
-        internal Servers.GameState CreateGame()
+        internal GameState CreateGame()
         {
             var newKey = 1;
             if (_games.Keys.Count > 0)
             {
                 newKey = _games.Keys.Max() + 1;
             }
-            var gameState = new Servers.GameState(newKey, Game.CreateGame());
+            var gameState = new GameState(newKey, Game.CreateGame());
             _games[newKey] = gameState;
             return gameState;
         }

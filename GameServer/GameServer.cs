@@ -1,11 +1,13 @@
 ﻿using System;
+using System.Net;
+using System.Text;
 using System.Text.RegularExpressions;
 using Newtonsoft.Json;
 using TicTacToe.GameEngine;
-using WebServer.Requests;
-using WebServer.Responses;
+using TicTacToe.Requests;
+using TicTacToe.Responses;
 
-namespace WebServer.Servers
+namespace TicTacToe
 {
     internal class GameServer : SocketServerBase
     {
@@ -16,20 +18,20 @@ namespace WebServer.Servers
             _gm = new GameManager();
         }
 
-        protected override Response GenerateResponse(byte[] data)
+        protected override Response GenerateResponse(Request request)
         {
-            if (!Request.TryParseRequest(data, out var request))
-            {
-                return new BadRequestResponse();
-            }
+            Console.WriteLine($"Received request for {request.Method.ToString()} {request.Resource}");
 
-            if (request.Resource == "/api/game/new" 
+            if (request.Resource == "/api/game/new"
                 && request.Method == HttpMethod.Get)
             {
-                return HandleNewGameRequest(request);
+                var response = HandleNewGameRequest(request);
+                Console.WriteLine($"Returning new game response to webserver. {response.ResponseCode} {response.ResponseText} (body {response.Body.Length} bytes)");
+                
+                return response;
             }
             else if (TryMatchGameActionsRoute(request.Resource, out var gameId)
-                && request.Method == HttpMethod.Post)
+                     && request.Method == HttpMethod.Post)
             {
                 return HandleGameActionRequest(request, gameId);
             }
@@ -60,10 +62,11 @@ namespace WebServer.Servers
         {
             try
             {
-                var action = JsonConvert.DeserializeObject<GameAction>(request.Body);
+                var body = Encoding.ASCII.GetString(request.Body);
+                var action = JsonConvert.DeserializeObject<GameAction>(body);
                 if (action == null)
                 {
-                    Console.WriteLine($"Could not deserialize body into Game Action\n{request.Body}");
+                    Console.WriteLine($"Could not deserialize body into Game Action\n{body}");
                     return new BadRequestResponse();
                 }
 
@@ -92,6 +95,13 @@ namespace WebServer.Servers
                 Console.WriteLine(e);
                 return new ServerErrorResponse();
             }
+        }
+
+        protected override void OnClosingConnection(EndPoint handlerRemoteEndPoint)
+        {
+            base.OnClosingConnection(handlerRemoteEndPoint);
+
+            Console.WriteLine($"Game server closing connection to {handlerRemoteEndPoint}");
         }
     }
 }

@@ -1,6 +1,6 @@
 ﻿using TicTacToe.GameEngine;
 
-namespace WebServer.Servers
+namespace TicTacToe
 {
     internal class GameState
     {

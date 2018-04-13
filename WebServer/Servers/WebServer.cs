@@ -2,12 +2,10 @@
 using System.Diagnostics;
 using System.IO;
 using System.Net.Sockets;
-using System.Text;
-using System.Threading;
-using WebServer.Requests;
-using WebServer.Responses;
+using TicTacToe.Requests;
+using TicTacToe.Responses;
 
-namespace WebServer.Servers
+namespace TicTacToe.Servers
 {
     public class WebServer : SocketServerBase
     {
@@ -20,22 +18,7 @@ namespace WebServer.Servers
             _gameServerPort = gameServerPort;
         }
 
-        protected override Response GenerateResponse(byte[] data)
-        {
-            Response response;
-            if (Request.TryParseRequest(data, out var request))
-            {
-                response = ProcessRequest(request, data);
-            }
-            else
-            {
-                Trace.WriteLine($"Unable to parse request for:\n {Encoding.UTF8.GetString(data)}");
-                return new BadRequestResponse();
-            }
-            return response;
-        }
-
-        private Response ProcessRequest(Request request, byte[] requestData)
+        protected override Response GenerateResponse(Request request)
         {
             // TODO we should implement a router to choose the handler for the request.
             if (request.Resource == ""
@@ -45,7 +28,7 @@ namespace WebServer.Servers
             }
             else if (request.Resource.StartsWith("/api"))
             {
-                return ProcessApiRequest(requestData);
+                return ProcessApiRequest(request);
             }
             else
             {
@@ -83,10 +66,8 @@ namespace WebServer.Servers
             }
         }
 
-        private Response ProcessApiRequest(byte[] requestData)
+        private Response ProcessApiRequest(Request request)
         {
-            // we should make a call to the game server to access the API.
-
             using (var socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp))
             {
                 socket.Connect(_gameServerHost, _gameServerPort);
@@ -96,21 +77,29 @@ namespace WebServer.Servers
                     // TODO do something here if we cannot connect.
                 }
 
-                socket.Send(requestData); // TODO we could try receiving a request object
-                // as a method parameter and then call a ToBytes() method on it to
-                // reconstruct the data stream.
+                Console.WriteLine($"Sending request to game server: {request.Method} {request.Resource}");
+                socket.Send(request.ToBytes());
 
-                var responseData = new byte[0];
-                while (responseData.Length == 0)
+                Console.WriteLine("Receiving header from game server");
+                var headerData = ReceiveHeaderData(socket);
+                Console.WriteLine($"Received {headerData.Length} bytes from game server.");
+
+                if (!ResponseHeader.TryParseHeader(headerData, out var header))
                 {
-                    responseData = ReceiveData(socket);
+                    return new ServerErrorResponse();
                 }
 
-                if (Response.TryParseResponse(responseData, out var response))
+                byte[] body = null;
+                if (header.ContainsKey("content-length"))
                 {
-                    return response;
+                    var bodyLength = Convert.ToInt32(header["content-length"]);
+
+                    Console.WriteLine($"Receiving body from game server.  Expecting {bodyLength} bytes");
+                    body = ReceiveBodyData(socket, bodyLength);
+                    Console.WriteLine($"Finished receiving body from game server.  Received {body.Length} bytes.");
                 }
-                return new ServerErrorResponse();
+
+                return new Response(header, body);
             }
         }
     }

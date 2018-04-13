@@ -1,4 +1,4 @@
-﻿namespace WebServer
+﻿namespace TicTacToe
 {
     public enum HttpMethod
     {

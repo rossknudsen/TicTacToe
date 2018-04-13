@@ -1,9 +1,7 @@
 ﻿using System;
 using System.IO;
-using System.Net;
-using WebServer.Servers;
 
-namespace WebServer
+namespace TicTacToe
 {
     public class Program
     {
@@ -19,8 +17,6 @@ namespace WebServer
             var webserver = new Servers.WebServer(host, webServerPort, host, gameServerPort);
             webserver.Run();
 
-            var gameServer = new GameServer(host, gameServerPort);
-            gameServer.Run();
             using (var sync = new HtmlFileSync(sourcePath, outputPath))
             {
                 Console.WriteLine("Press any key to exit application...");

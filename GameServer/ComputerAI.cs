@@ -2,7 +2,7 @@
 using System.Linq;
 using TicTacToe.GameEngine;
 
-namespace WebServer
+namespace TicTacToe
 {
     internal static class ComputerAi
     {
