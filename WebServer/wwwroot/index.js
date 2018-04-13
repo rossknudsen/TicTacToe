@@ -1,10 +1,12 @@
 ﻿"use strict";
 
+const gameServerHost = "http://localhost:8080";
+
 let game;
 
 function getGame() {
     // TODO make API call to get the initial game.
-    $.get("http://localhost:8080/api/game/new", function(data, status) {
+    $.get(gameServerHost + "/api/game/new", function(data, status) {
         if (status === "success") {
             game = data;
             renderBoard();
@@ -119,7 +121,7 @@ function handleSquareClick(rowIndex, colIndex) {
     $.ajax
     ({
         type: "POST",
-        url: "http://localhost:8080/api/game/" + game.GameId + "/actions",
+        url: gameServerHost + "/api/game/" + game.GameId + "/actions",
         data: actionString,
         contentType: "application/json",
         success: function(data, status) {

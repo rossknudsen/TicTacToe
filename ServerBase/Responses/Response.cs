@@ -15,9 +15,9 @@ namespace TicTacToe.Responses
             ResponseText = responseText;
         }
 
-        public virtual HttpResponseCode ResponseCode { get; }
+        public HttpResponseCode ResponseCode { get; }
 
-        public virtual string ResponseText { get; }
+        public string ResponseText { get; }
 
         protected override string GenerateFirstLine()
         {

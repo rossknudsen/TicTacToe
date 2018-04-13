@@ -2,7 +2,6 @@
 using System.IO;
 using System.Net;
 using System.Net.Sockets;
-using System.Text;
 using System.Threading.Tasks;
 using TicTacToe.Requests;
 using TicTacToe.Responses;
@@ -37,44 +36,56 @@ namespace TicTacToe
                 {
                     using (var handler = socket.Accept())
                     {
-                        Response response;
-
                         var headerData = ReceiveHeaderData(handler);
-                        if (!RequestHeader.TryParseHeader(headerData, out var header))
+
+                        if (headerData != null)
                         {
-                            response = new BadRequestResponse();
-                        }
-                        else if (header.Method == HttpMethod.Post)
-                        { 
-                            // there is a body, check the length header value.
-                            if (!header.ContainsKey("content-length"))
-                            {
-                                response = new LengthRequiredResponse();
-                            }
-                            else
-                            {
-                                var bodyLength = Convert.ToInt32(header["content-length"]);
-                                var bodyData = ReceiveBodyData(handler, bodyLength);
-                                var request = new Request(header, bodyData);
-                                response = GenerateResponse(request);
-                            }
-                        }
-                        else
-                        {
-                            var request = new Request(header);
-                            response = GenerateResponse(request);
+                            var response = DetermineResponse(handler, headerData);
+                            handler.Send(response.ToBytes());
                         }
 
-                        handler.Send(response.ToBytes());
-
-                        OnClosingConnection(handler.RemoteEndPoint);
-                        
-                        handler.Shutdown(SocketShutdown.Both);
-                        handler.Close(5);  // allow any data that is pending to be sent for 5 seconds
-                        handler.Dispose();
+                        CloseSocket(handler);
                     }
                 }
             }
+        }
+
+        private Response DetermineResponse(Socket handler, byte[] headerData)
+        {
+            Response response;
+            if (!RequestHeader.TryParseHeader(headerData, out var header))
+            {
+                response = new BadRequestResponse();
+            }
+            else if (header.Method == HttpMethod.Post)
+            {
+                // there is a body, check the length header value.
+                if (!header.ContainsKey("content-length"))
+                {
+                    response = new LengthRequiredResponse();
+                }
+                else
+                {
+                    var bodyLength = Convert.ToInt32(header["content-length"]);
+                    var bodyData = ReceiveBodyData(handler, bodyLength);
+                    var request = new Request(header, bodyData);
+                    response = GenerateResponse(request);
+                }
+            }
+            else
+            {
+                var request = new Request(header);
+                response = GenerateResponse(request);
+            }
+
+            return response;
+        }
+
+        private static void CloseSocket(Socket handler)
+        {
+            handler.Shutdown(SocketShutdown.Both);
+            handler.Close(5);  // allow any data that is pending to be sent for 5 seconds
+            handler.Dispose();
         }
 
         protected byte[] ReceiveHeaderData(Socket handler)
@@ -110,10 +121,9 @@ namespace TicTacToe
                         return result;
                     }
                 }
-                else if (bytesCount > 1)
+                else if (bytesCount == 0)
                 {
-                    Console.WriteLine("More than one byte received.  STOP!!!");
-                    throw new Exception("More than one byte received.");
+                    return null;
                 }
             }
         }
@@ -127,7 +137,7 @@ namespace TicTacToe
 
             while (true)
             {
-                var bytesCount = handler.Receive(result, totalBytesReceived, bodyLength - totalBytesReceived, SocketFlags.None);
+                totalBytesReceived += handler.Receive(result, totalBytesReceived, bodyLength - totalBytesReceived, SocketFlags.None);
 
                 if (totalBytesReceived >= bodyLength)
                 {
@@ -137,7 +147,5 @@ namespace TicTacToe
         }
 
         protected abstract Response GenerateResponse(Request request);
-
-        protected virtual void OnClosingConnection(EndPoint handlerRemoteEndPoint) { }
     }
 }

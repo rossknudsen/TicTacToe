@@ -96,12 +96,5 @@ namespace TicTacToe
                 return new ServerErrorResponse();
             }
         }
-
-        protected override void OnClosingConnection(EndPoint handlerRemoteEndPoint)
-        {
-            base.OnClosingConnection(handlerRemoteEndPoint);
-
-            Console.WriteLine($"Game server closing connection to {handlerRemoteEndPoint}");
-        }
     }
 }
