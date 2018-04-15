@@ -34,12 +34,12 @@ namespace TicTacToe
         /// </summary>
         /// <param name="line">A string representing a line in the header.</param>
         /// <returns>A tuple containing the key and value from the header line.</returns>
-        protected static (string key, string value) ReadHeaderLine(string line)
+        protected static Tuple<string, string> ReadHeaderLine(string line)
         {
             var split = line.Split(':');
             var key = split[0].Trim(' ');
             var value = split[1].Trim(' ');
-            return (key, value);
+            return new Tuple<string, string>(key, value);
         }
 
         /// <summary>
@@ -50,7 +50,7 @@ namespace TicTacToe
         protected static Dictionary<string, string> ParseHeaders(IEnumerable<string> lines)
         {
             return lines.Select(ReadHeaderLine)
-                .ToDictionary(p => p.key, p => p.value);
+                .ToDictionary(p => p.Item1, p => p.Item2);
         }
 
         /// <summary>

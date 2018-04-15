@@ -44,11 +44,11 @@ namespace TicTacToe.Responses
             var firstLine = ReadFirstLine(lines.First());
 
             // return a new response header instance containing the parsed results.
-            header = new ResponseHeader(firstLine.code, firstLine.responseText, headers);
+            header = new ResponseHeader(firstLine.Item1, firstLine.Item2, headers);
             return true;
         }
 
-        private static (HttpResponseCode code, string responseText) ReadFirstLine(string line)
+        private static Tuple<HttpResponseCode, string> ReadFirstLine(string line)
         {
             // we just split the first line using the space character.
             var split = line.Split(new[] { ' ' }, 3);
@@ -57,7 +57,7 @@ namespace TicTacToe.Responses
             {
                 throw new ArgumentException("Header Line is malformed.");
             }
-            return (code, responseText);
+            return new Tuple<HttpResponseCode, string>(code, responseText);
         }
     }
 }

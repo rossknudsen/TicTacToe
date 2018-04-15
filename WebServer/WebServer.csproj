@@ -8,9 +8,10 @@
     <OutputType>Exe</OutputType>
     <RootNamespace>TicTacToe</RootNamespace>
     <AssemblyName>WebServer</AssemblyName>
-    <TargetFrameworkVersion>v4.7</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -66,10 +67,6 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\GameEngine\GameEngine.csproj">
-      <Project>{634cbcb1-849a-47a7-84b6-7e9bfd9c93dd}</Project>
-      <Name>GameEngine</Name>
-    </ProjectReference>
     <ProjectReference Include="..\ServerBase\ServerBase.csproj">
       <Project>{bb0bf445-f6cf-4e88-abf3-c4fdb5569317}</Project>
       <Name>ServerBase</Name>

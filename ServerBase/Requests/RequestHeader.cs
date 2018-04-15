@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace TicTacToe.Requests
@@ -43,11 +44,11 @@ namespace TicTacToe.Requests
             var firstLine = ReadFirstLine(lines.First());
 
             // create a new request header instance using the parsed results.
-            header = new RequestHeader(firstLine.method, firstLine.resource, headers);
+            header = new RequestHeader(firstLine.Item1, firstLine.Item2, headers);
             return true;
         }
 
-        private static (HttpMethod method, string resource) ReadFirstLine(string line)
+        private static Tuple<HttpMethod, string> ReadFirstLine(string line)
         {
             // split the first line using space chars.  Then identify the method and resource from the
             // split values.
@@ -55,7 +56,7 @@ namespace TicTacToe.Requests
             var httpMethod = HeaderBase.GetHttpMethod(split[0].ToLower());
             var resource = split[1];
 
-            return (httpMethod, resource);
+            return new Tuple<HttpMethod, string>(httpMethod, resource);
         }
     }
 }
