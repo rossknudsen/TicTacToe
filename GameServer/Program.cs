@@ -10,6 +10,7 @@ namespace TicTacToe
             var host = "127.0.0.1";
             var gameServerPort = 8081;
 
+            // create a game server and run it.
             var gameServer = new GameServer(host, gameServerPort);
             gameServer.Run();
 

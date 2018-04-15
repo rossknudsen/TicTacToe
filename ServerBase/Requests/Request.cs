@@ -2,6 +2,9 @@
 
 namespace TicTacToe.Requests
 {
+    /// <summary>
+    /// Represents a HTTP Request
+    /// </summary>
     public class Request : MessageBase
     {
         private readonly RequestHeader _header;
@@ -12,8 +15,14 @@ namespace TicTacToe.Requests
             _header = header;
         }
 
+        /// <summary>
+        /// The HTTP method or verb
+        /// </summary>
         public HttpMethod Method => _header.Method;
 
+        /// <summary>
+        /// The requested resource
+        /// </summary>
         public string Resource => _header.Resource;
 
         protected override string GenerateFirstLine()
