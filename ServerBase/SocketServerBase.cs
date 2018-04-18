@@ -31,7 +31,8 @@ namespace TicTacToe
         public void Run()
         {
             // run the server code on a separate thread.
-            var task = Task.Run(RunServer);
+            //var task = Task.Run(RunServer);
+            RunServer();
         }
 
         /// <summary>
@@ -53,6 +54,8 @@ namespace TicTacToe
                     // when an connection is made, create a separate socket to handle the request/response.
                     using (var handler = socket.Accept())
                     {
+                        handler.ReceiveTimeout = 5000;
+
                         // read the header data from the client.
                         var headerData = ReceiveHeaderData(handler);
 
@@ -144,7 +147,15 @@ namespace TicTacToe
             {
                 // retrieve a byte from the client.
                 var data = new byte[1];
-                var bytesCount = handler.Receive(data, 0, 1, SocketFlags.None);
+                int bytesCount;
+                try
+                {
+                    bytesCount = handler.Receive(data, 0, 1, SocketFlags.None);
+                }
+                catch (SocketException)
+                {
+                    return null;
+                }
                 var datum = data[0];
 
                 // if the number of bytes read is one then we have data.

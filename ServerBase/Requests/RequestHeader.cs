@@ -15,7 +15,7 @@ namespace TicTacToe.Requests
             Resource = requestedResource;
             foreach (var header in headers)
             {
-                Add(header.Key.ToLower(), header.Value);
+                this[header.Key.ToLower()] = header.Value;
             }
         }
 

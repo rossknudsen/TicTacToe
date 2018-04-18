@@ -15,6 +15,7 @@ namespace TicTacToe
         {
             Headers = headers;
             Body = body;
+            Headers["Connection"] = "close";
         }
 
         /// <summary>
